@@ -26,8 +26,6 @@ export class UserService extends BaseService<UserDoc, ''> {
     if (!existingUser) {
           throw new Error('User not found');
         }
-      
-        // Update user data
         Object.assign(existingUser, userData);
         return existingUser.save();
   }
