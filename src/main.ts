@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalGuards(new TokenMiddlewareGuard(reflector));
   // app.useGlobalGuards(new AccountTypeGuard(reflector));
   app.useGlobalGuards(new AccountStatusGuard(reflector));
-  await app.listen(process.env.PORT || 3000);
-  Logger.debug(`listening on port ${process.env.PORT || 3000}`);
+  await app.listen(process.env.PORT || 3030);
+  Logger.debug(`listening on port ${process.env.PORT || 3030}`);
 }
 bootstrap();
