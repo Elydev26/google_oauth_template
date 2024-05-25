@@ -109,7 +109,7 @@ import { UserService } from 'src/user/services/user.service';
         // Get user data using access token
         const userData = await this.getUserGoogleData(data.access_token);
         // Check if user already exists in the database
-        let user = await this.userService.findByEmail(userData.email);
+        let user = await this.userService.getByEmail(userData.email);
         if (!user)
           user = await this.userService.create({
             ...userData,
