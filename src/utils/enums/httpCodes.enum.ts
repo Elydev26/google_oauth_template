@@ -1,4 +1,4 @@
-export enum NitralsHttpCodesEnum {
+export enum HttpCodesEnum {
   AccessRequestError = 450,
   TokenExpiredError = 451,
   RefreshTokenError = 452,

@@ -8,7 +8,7 @@ import {
   import { ConfigService } from '@nestjs/config';
   import * as jwt from 'jsonwebtoken';
   import { DeviceTokenDto, UserIdDto, UserTokenDto } from '../dto/token.dto';
-  import { NitralsHttpCodesEnum } from '../../utils/enums/httpCodes.enum';
+  import { HttpCodesEnum } from '../../utils/enums/httpCodes.enum';
   import { EnvConfigEnum } from 'src/utils/enums/envConfig.enum';
   
   @Injectable()
@@ -68,10 +68,10 @@ import {
             if (err.name === 'TokenExpiredError') {
               throw new HttpException(
                 {
-                  status: NitralsHttpCodesEnum.TokenExpiredError,
+                  status: HttpCodesEnum.TokenExpiredError,
                   message: 'token expired',
                 },
-                NitralsHttpCodesEnum.TokenExpiredError,
+                HttpCodesEnum.TokenExpiredError,
               );
             }
             // TODO: log token error
@@ -127,10 +127,10 @@ import {
             if (err.name === 'TokenExpiredError') {
               throw new HttpException(
                 {
-                  status: NitralsHttpCodesEnum.RefreshTokenExpiredError,
+                  status: HttpCodesEnum.RefreshTokenExpiredError,
                   message: 'refesh token expired',
                 },
-                NitralsHttpCodesEnum.RefreshTokenExpiredError,
+                HttpCodesEnum.RefreshTokenExpiredError,
               );
             }
             throw new BadRequestException(err.message);
@@ -148,10 +148,10 @@ import {
             if (err.name === 'TokenExpiredError') {
               throw new HttpException(
                 {
-                  status: NitralsHttpCodesEnum.TokenExpiredError,
+                  status: HttpCodesEnum.TokenExpiredError,
                   message: 'token expired',
                 },
-                NitralsHttpCodesEnum.TokenExpiredError,
+                HttpCodesEnum.TokenExpiredError,
               );
             }
             throw new BadRequestException(err.message);
