@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { BaseService } from 'src/utils/database/db.service';
 import { User, UserDoc } from '../model/user.model';
 import { CreateUserDto } from '../dto/user.dto';
@@ -14,40 +18,43 @@ export class UserService extends BaseService<UserDoc, ''> {
     super(userModel);
   }
 
-  async create(createUserDto: Partial<User>):Promise<UserDoc> {
+  async create(createUserDto: CreateUserDto) {
     const user = await this.userModel.create({
       ...createUserDto,
     });
-     return user
+    return user;
   }
 
-  async updateUser(userId: string, userData: Partial<User>): Promise<UserDoc> {
-    const existingUser = await this.userModel.findByIdAndUpdate(userId, userData, { new: true });
+  async updateUser(userId: string, userData: CreateUserDto) {
+    const existingUser = await this.userModel.findByIdAndUpdate(
+      userId,
+      userData,
+      { new: true },
+    );
     if (!existingUser) {
-          throw new Error('User not found');
-        }
-        Object.assign(existingUser, userData);
-        return existingUser.save();
+      throw new Error('User not found');
+    }
+    Object.assign(existingUser, userData);
+    return existingUser.save();
   }
 
-  async getUserById(userId: string): Promise<ApiResponse<UserDoc>> {
-    const user = await this.findByIdOrErrorOut(userId);
+  async getUserById(userId: string) {
+    const user = this.userModel.findOne({ userId });
     return {
       status: 'success',
       data: user,
     };
   }
 
-  findByEmail(email: string) :Promise<UserDoc> {
-    const user = this.userModel.findOne({email});
+  async getByEmail(email: string) {
+    const user = this.userModel.findOne({ email });
     if (!user) {
-    throw new BadRequestException('user email does not exist')
+      throw new BadRequestException('user email does not exist');
     }
     return user;
   }
 
-  async updateRefreshToken(userId:string,refreshToken:string) {
-   return await this.findByIdAndUpdate(userId,{refreshToken});
-   
-}
+  async updateRefreshToken(userId: string, refreshToken: string) {
+    return await this.findByIdAndUpdate(userId, { refreshToken });
+  }
 }
