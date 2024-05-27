@@ -145,6 +145,96 @@ import { UserService } from 'src/user/services/user.service';
         throw new HttpException('Login failed', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
+    async getFacebookAccessToken(code: string): Promise<string> {
+      const url = 'https://graph.facebook.com/v11.0/oauth/access_token';
+      const params = {
+        client_id: this.config.get<string>(EnvConfigEnum.FACEBOOK_CLIENT_ID),
+        redirect_uri: this.config.get<string>(EnvConfigEnum.FACEBOOK_REDIRECT_URI),
+        client_secret: this.config.get<string>(EnvConfigEnum.FACEBOOK_CLIENT_SECRET),
+        code,
+      };
+  
+      const response = await axios.get(url, { params });
+      return response.data.access_token;
+    }
+  
+    async getFacebookUserData(accessToken: string): Promise<any> {
+      const url = 'https://graph.facebook.com/me';
+      const params = {
+        fields: 'id,name,email',
+        access_token: accessToken,
+      };
+  
+      const response = await axios.get(url, { params });
+      return response.data;
+    }
+    async getUserFromToken(accessToken: string) {
+    
+        const fields = 'id,name,email';
+        const url = `https://graph.facebook.com/me?fields=${fields}&access_token=${accessToken}`;
+        const response = await axios.get(url);
+        return response.data;
+      }
+    async authenticateWithFacebook(code: string): Promise<ApiResponse> {
+      try {
+        // Exchange authorization code for access token
+        const { data } = await axios.get('https://graph.facebook.com/v12.0/oauth/access_token', {
+          params: {
+            client_id: this.config.get<string>(EnvConfigEnum.FACEBOOK_CLIENT_ID),
+            client_secret: this.config.get<string>(EnvConfigEnum.FACEBOOK_CLIENT_SECRET),
+            redirect_uri: this.config.get<string>(EnvConfigEnum.FACEBOOK_REDIRECT_URI),
+            code,
+          },
+        });
+  
+        // Get user data using access token
+        const userData = await this.getUserFromToken(data.access_token);
+      // Extract user information
+      const { id, name, email } = userData;
+        // Check if user already exists in the database
+        let user = await this.userService.getByEmail(userData.email);
+  
+        if (!user) {
+          // Create a new user if not found
+          user = await this.userService.create({
+            email,
+            verified: true,
+            firstName: name.split(' ')[0], 
+            lastName: name.split(' ')[1],
+            profilePicture: `https://graph.facebook.com/${id}/picture?type=large`,
+          });
+        }
+  
+        // Generate authentication token and refresh token
+        const authToken = await this.tokenService.tokenize({
+          data: {
+            id: user.id,
+            userRole: user.userRole,
+            accountStatus: user.accountStatus,
+            verfired: user.verified,
+          },
+        });
+        const refreshToken = await this.tokenService.refreshToken({
+          id: user.id,
+        });
+  
+        // Update user's refresh token
+        user = await this.userService.updateRefreshToken(user.id, refreshToken);
+  
+        return {
+          status: 'success',
+          data: {
+            user,
+            authToken,
+            refreshToken,
+          },
+        };
+      } catch (error) {
+        // Handle errors using NestJS's exception handling
+        Logger.debug('Error during Facebook OAuth:', error);
+        throw new HttpException('Login failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
  async refreshAccessToken(token: RefreshAccessTokenDto):Promise<ApiResponse> {
       //verify refresh token
       const { id } = await this.tokenService.verifyRefreshToken(
