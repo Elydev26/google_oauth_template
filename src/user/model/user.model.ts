@@ -27,6 +27,9 @@ export class User {
   facebookId?: string;
 
   @Prop()
+  googleId?: String
+
+  @Prop()
   displayName?: string;
 
   @Prop({ enum: Object.values(UserRoleEnum) })
