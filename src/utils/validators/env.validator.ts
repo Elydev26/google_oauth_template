@@ -19,5 +19,6 @@ export const envConfigValidator = Joi.object().keys({
   [EnvConfigEnum.FACEBOOK_CLIENT_ID]: Joi.string().trim().required(),
   [EnvConfigEnum.FACEBOOK_CLIENT_SECRET]: Joi.string().trim().required(),
   [EnvConfigEnum.FACEBOOK_REDIRECT_URI]: Joi.string().trim().required(),
-  [EnvConfigEnum.FACEBOOK_SCOPE]: Joi.string().trim().required()
+  [EnvConfigEnum.FACEBOOK_SCOPE]: Joi.string().trim().required(),
+  [EnvConfigEnum.GOOGLE_API_KEY]: Joi.string().trim().required()
 });
