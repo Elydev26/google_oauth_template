@@ -9,6 +9,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserModule } from 'src/user/user.module';
 import { AppController } from './cfontroller/app.controller';
 import { AppService } from './service/app.service';
+import { LocationModule } from 'src/location/location.module';
 
 
 @Module({
@@ -16,6 +17,7 @@ import { AppService } from './service/app.service';
     AuthModule,
     TokenModule,
     UserModule,
+    LocationModule,
     ConfigModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
